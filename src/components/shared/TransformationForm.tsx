@@ -32,6 +32,8 @@ import { startTransition, useState, useTransition } from "react";
 import { AspectRatioKey, debounce, deepMergeObjects } from "@/lib/utils";
 import { Value } from "@radix-ui/react-select";
 import { updateCredits } from "@/lib/actions/user.actions";
+import MediaUploader from "./MediaUploader";
+import TransformedImage from "./TransformedImage";
 
 export const formSchema = z.object({
   title: z.string(),
@@ -107,7 +109,7 @@ const TransformationForm = ({
       }));
     }, 1000);
   };
-  const onTranformationHandler = () => {
+  const onTransformationHandler = async () => {
     setIsTransforming(true);
 
     setTransformationConfig(
@@ -116,7 +118,7 @@ const TransformationForm = ({
     setNewTransformation(null);
 
     startTransition(async () => {
-      // await updateCredits();
+      await updateCredits(userId, -1);
     });
   };
   return (
@@ -204,12 +206,36 @@ const TransformationForm = ({
             )}
           </div>
         )}
+        <div className="media-uploader-field">
+          <CustomField
+            control={form.control}
+            name="publicId"
+            className="flex size-full flex-col"
+            render={({ field }) => (
+              <MediaUploader
+                onValueChange={field.onChange}
+                setImage={setImage}
+                publicId={field.value}
+                image={image}
+                type={type}
+              />
+            )}
+          />
+          <TransformedImage
+            image={image}
+            type={type}
+            title={form.getValues().title}
+            isTransforming={isTransforming}
+            setIsTransforming={setIsTransforming}
+            transformationConfig={transformationConfig}
+          />
+        </div>
         <div className="flex flex-col gap-4">
           <Button
             type="button"
             className="submit-button capitalize"
             disabled={isTransforming || newTransformation === null}
-            onClick={onTranformationHandler}
+            onClick={onTransformationHandler}
           >
             {isTransforming ? "Transforming..." : "Apply transformation"}
           </Button>
