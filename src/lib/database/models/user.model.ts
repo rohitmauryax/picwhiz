@@ -28,7 +28,7 @@ const UserSchema = new Schema({
     type: String,
   },
   planId: {
-    type: String,
+    type: Number,
     default: 1,
   },
   creditBalance: {
